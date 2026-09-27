@@ -19,6 +19,7 @@ const types = {
   ".mp4": "video/mp4",
   ".vtt": "text/vtt; charset=utf-8",
   ".webp": "image/webp",
+  ".zip": "application/zip",
 };
 createServer(async (req, res) => {
   await nodeApiHandler(req, res, async () => {

@@ -26,7 +26,17 @@ Set these in Netlify's environment settings with the Functions scope. Never use 
 - Narration is split into 600-character passages. Audio responses are capped below the 6 MB buffered response limit.
 - Platform rate limits apply per IP/domain: 12 chat and 30 voice requests per minute. These are burst controls, not a global spending cap.
 - In-memory caches and hourly counters are temporary and are not shared across function instances. Provider budgets remain separate from hosting limits.
-- Timeline assets and the recorded avatar video are static. Live research and speech require internet. OCR, logins, device sync and live avatar rendering remain planned features.
+- Timeline assets and the recorded avatar video are static. Live research and speech require internet. OCR, logins and device sync remain planned features.
+
+## Optional LAM avatar worker
+
+The interactive avatar adds `/api/avatar` and a browser renderer. Its Python/ONNX worker runs separately from Netlify. See [LAM setup](LAM_AVATAR.md).
+
+- Configure `AVATAR_SERVICE_URL` with the worker's HTTPS endpoint and `AVATAR_SERVICE_TOKEN` as a server-only secret shared with that worker.
+- Set `AVATAR_ASSET_URL` to the exported ZIP's public path, such as `/avatars/siddharth.zip`, and `AVATAR_NAME=Siddharth` after that asset has been imported and checked.
+- Never set the published worker URL to `127.0.0.1`: it would refer to the Netlify function environment, not your laptop.
+- The proxy limits avatar requests to 30 per minute per IP/domain. This is a prototype limit, not a hosted-worker load guarantee.
+- If the worker is unconfigured or offline, the UI offers voice conversation and the recorded introduction instead. No public worker has been deployed as part of this local integration.
 
 ## Verify a deploy
 

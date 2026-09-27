@@ -20,6 +20,22 @@ function setup(fetchImpl = async () => Response.json(answer), language = { code:
   return { session, states, listens, readings, requests, hooks };
 }
 
+test('avatar sample uses the real speech path without opening the microphone afterward', async () => {
+  const f = setup(async () => Response.json({ ...answer, mode: 'conversation' }));
+  f.session.preview();
+  await flush();
+  assert.equal(f.requests[0].query, 'Hello');
+  assert.equal(f.readings.length, 1);
+  assert.equal(f.listens.length, 0);
+  f.hooks.onPlaybackEnd();
+  await new Promise(resolve => setTimeout(resolve, 10));
+  assert.equal(f.states.at(-1).active, false);
+  assert.equal(f.listens.length, 0);
+  f.session.start();
+  assert.equal(f.listens.length, 1);
+  f.session.dispose();
+});
+
 test("voice guide sends recognised questions automatically, speaks, then listens for a follow-up", async () => {
   const f = setup();
   assert.equal(f.listens.length, 0);

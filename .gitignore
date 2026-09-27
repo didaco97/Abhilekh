@@ -6,6 +6,7 @@ dist/
 *.log
 test-results/
 .venv-imagegen/
+.venv-avatar/
 tmp/imagegen/
 tmp/
 output/

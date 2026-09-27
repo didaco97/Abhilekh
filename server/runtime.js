@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { createResearchService } from "./research.js";
 import { createVoiceService, VOICE_REQUEST_LIMIT } from "./voice.js";
+import { createAvatarService, AVATAR_REQUEST_LIMIT } from "./avatar.js";
 
 // This module is imported only by server entry points, never by React.
 const envFile = fileURLToPath(new URL("../.env.local", import.meta.url));
@@ -15,17 +16,24 @@ export const voiceService = createVoiceService({
   apiKey: process.env.SARVAM_API_KEY,
   hourlyLimit: Number(process.env.VOICE_HOURLY_LIMIT) || 120,
 });
+export const avatarService = createAvatarService({
+  serviceUrl: process.env.AVATAR_SERVICE_URL,
+  token: process.env.AVATAR_SERVICE_TOKEN,
+  assetUrl: process.env.AVATAR_ASSET_URL,
+  name: process.env.AVATAR_NAME || 'Siddharth',
+});
 
 export async function nodeApiHandler(req, res, next = () => {}) {
   const pathname = (req.url || "").split("?")[0];
-  if (!["/api/chat", "/api/voice"].includes(pathname)) return next();
+  if (!["/api/chat", "/api/voice", "/api/avatar"].includes(pathname)) return next();
   const isVoice = pathname === "/api/voice";
+  const isAvatar = pathname === "/api/avatar";
   try {
     const chunks = [];
     let size = 0;
     for await (const chunk of req) {
       size += chunk.length;
-      if (size > (isVoice ? VOICE_REQUEST_LIMIT : 18000)) {
+      if (size > (isAvatar ? AVATAR_REQUEST_LIMIT : isVoice ? VOICE_REQUEST_LIMIT : 18000)) {
         res.writeHead(413, { "Content-Type": "application/json" });
         res.end(
           JSON.stringify({ message: isVoice ? "Please record a shorter question." : "Please start a shorter conversation." }),
@@ -45,7 +53,7 @@ export async function nodeApiHandler(req, res, next = () => {}) {
         ? { body: Buffer.concat(chunks) }
         : {}),
     });
-    const result = await (isVoice ? voiceService : researchService).handle(
+    const result = await (isAvatar ? avatarService : isVoice ? voiceService : researchService).handle(
       request,
       req.socket.remoteAddress || "local",
     );

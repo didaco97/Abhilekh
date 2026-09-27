@@ -19,8 +19,10 @@ function audioBlob(data) {
 export function createCloudSpeechSession({ mediaDevices, Recorder, AudioClass, fetchImpl = fetch,
   makeObjectURL = URL.createObjectURL, revokeObjectURL = URL.revokeObjectURL,
   onState, onDraft, onNotice, onCaptureStart = () => {}, onPlaybackStart = () => {},
-  onPlaybackEnd = () => {}, onError = () => {}, monitorBoundary = monitorSpeechBoundary }) {
+  onPlaybackEnd = () => {}, onError = () => {}, monitorBoundary = monitorSpeechBoundary,
+  preparePlayback = null, onAudioStart = () => {}, onAudioStop = () => {} }) {
   let token = 0, stream, recorder, request, recordingTimer, permissionTimer, audio, audioUrl;
+  let preparing;
   const cache = new Map();
   let cacheBytes = 0;
   let stopBoundary;
@@ -34,6 +36,8 @@ export function createCloudSpeechSession({ mediaDevices, Recorder, AudioClass, f
     clearTimeout(permissionTimer);
     stopBoundary?.(); stopBoundary = null;
     request?.abort(); request = null;
+    preparing?.abort(); preparing = null;
+    onAudioStop();
     if (recorder?.state === "recording") { try { recorder.stop(); } catch { /* Already stopped. */ } }
     recorder = null;
     releaseStream();
@@ -148,6 +152,7 @@ export function createCloudSpeechSession({ mediaDevices, Recorder, AudioClass, f
     let index = 0;
     async function next() {
       if (current !== token) return;
+      onAudioStop();
       if (audioUrl) { revokeObjectURL(audioUrl); audioUrl = null; }
       if (index >= chunks.length) { audio = null; update({ speakingId: null }); onNotice(""); onPlaybackEnd(); return; }
       const chunk = chunks[index++];
@@ -167,12 +172,20 @@ export function createCloudSpeechSession({ mediaDevices, Recorder, AudioClass, f
           }
         }
         if (current !== token) return;
+        let prepared = null;
+        if (preparePlayback) {
+          const controller = new AbortController();
+          preparing = controller;
+          try { prepared = await preparePlayback({ blob, signal: controller.signal }); }
+          finally { if (preparing === controller) preparing = null; }
+          if (current !== token) return;
+        }
         audioUrl = makeObjectURL(blob);
         audio = new AudioClass(audioUrl);
         audio.onended = next;
         audio.onerror = () => { if (current === token) { stopAll(); fail("Audio could not play. Check your speaker or try again."); } };
         await audio.play();
-        if (current === token) { onNotice(`Reading in ${name}.`); onPlaybackStart(); }
+        if (current === token) { onAudioStart({ audio, prepared }); onNotice(`Reading in ${name}.`); onPlaybackStart(); }
       } catch (error) {
         if (current !== token) return;
         stopAll();

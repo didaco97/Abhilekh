@@ -8,7 +8,7 @@ const features = [
   { icon: Route, title: "Explore the 3D timeline", description: "Discover Ambedkar’s life through interactive milestones and original sources." },
   { icon: BookOpen, title: "Ask the research room", description: "Ask questions, follow citations and save references to your visit notes." },
   { icon: Mic, title: "Have a voice conversation", description: "Speak and listen in multiple languages with the AI guide." },
-  { icon: Video, title: "Meet Siddharth", description: "Watch the recorded avatar preview. Live avatar interaction is in development.", preview: true },
+  { icon: Video, title: "Meet Siddharth", description: "Explore the experimental 3D guide and his recorded introduction.", badge: "LAB" },
 ];
 
 export default function PrototypeWelcome({ onEnter }) {
@@ -35,10 +35,10 @@ export default function PrototypeWelcome({ onEnter }) {
         <section className="welcome-features" aria-labelledby="welcome-features-title">
           <h3 id="welcome-features-title">Inside this early prototype</h3>
           <ul>
-            {features.map(({ icon: Icon, title, description, preview }) => (
+            {features.map(({ icon: Icon, title, description, badge }) => (
               <li key={title}>
                 <span className="welcome-feature-icon"><Icon size={18} aria-hidden="true" /></span>
-                <div><h4>{title}{preview && <span>PREVIEW</span>}</h4><p>{description}</p></div>
+                <div><h4>{title}{badge && <span>{badge}</span>}</h4><p>{description}</p></div>
               </li>
             ))}
           </ul>

@@ -1,0 +1,52 @@
+.avatar-guide-container { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 10px; }
+.avatar-mode-picker { display: flex; flex-wrap: wrap; gap: 8px 22px; flex-shrink: 0; }
+.avatar-mode-picker button { display: flex; align-items: center; gap: 7px; min-height: 34px; font-size: 11px; border-bottom: 2px solid transparent; color: var(--muted); }
+.avatar-mode-picker button[aria-pressed="true"] { color: var(--ink); border-color: var(--rust); }
+.avatar-mode-picker small { font-size: 6px; letter-spacing: 1px; color: var(--rust); }
+.lam-unavailable { display: flex; flex: 1; min-height: 0; gap: clamp(20px, 5vw, 80px); background: #efeee5; border: 1px solid var(--line); padding: 20px; overflow-y: auto; }
+.lam-unavailable > img { height: 100%; width: auto; max-width: 43%; object-fit: contain; object-position: center; min-height: 0; }
+.lam-unavailable > div { align-self: center; max-width: 420px; }
+.lam-unavailable h2 { font: 400 clamp(28px, 3vw, 43px)/1.12 var(--serif); margin: 14px 0; }
+.lam-unavailable h2 em { display: block; color: var(--rust); }
+.lam-unavailable p { font-size: 13px; color: var(--muted); line-height: 1.8; }
+.lam-readiness { display: flex; flex-wrap: wrap; gap: 14px; font-size: 10px; margin: 20px 0; }
+.lam-retry { display: inline-flex; gap: 6px; align-items: center; margin: 12px 0 12px 18px; font-size: 10px; }
+.lam-unavailable small { display: block; font-size: 9px; color: var(--muted); margin-top: 14px; }
+.lam-exhibit { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto auto; }
+.lam-exhibit .voice-exhibit-top { grid-column: 1 / -1; grid-row: 1; }
+.lam-exhibit .voice-exhibit-body { display: contents; }
+.lam-exhibit .voice-presence { position: relative; justify-content: flex-end; padding: 0 12px 14px; grid-column: 1; grid-row: 2 / 4; border-right: 1px solid #d8dec222; overflow: hidden; }
+.lam-exhibit .lam-stage { position: absolute; inset: 24px 0 86px; overflow: hidden; }
+.lam-exhibit .voice-exhibit-controls { grid-column: 2; grid-row: 2 / 4; display: flex; flex-direction: column; justify-content: center; padding: 16px; }
+.lam-exhibit.with-companion .voice-exhibit-controls { grid-row: 3; }
+.lam-exhibit .voice-main-controls { flex-wrap: wrap; }
+.lam-exhibit .voice-companion { grid-column: 2; grid-row: 2; width: auto; min-width: 0; max-width: none; }
+.lam-exhibit .voice-exhibit-note { grid-column: 1 / -1; grid-row: 4; }
+.lam-stage canvas { max-width: 100%; max-height: 100%; }
+.lam-exhibit .voice-exhibit-eyebrow { margin-top: auto; position: relative; pointer-events: none; }
+.lam-exhibit .voice-presence h2 { position: relative; font-size: 26px; margin: 5px 0; pointer-events: none; }
+.lam-exhibit .voice-session-status, .lam-exhibit .voice-turn-indicator { position: relative; pointer-events: none; }
+.lam-exhibit .voice-session-status { min-height: 16px; margin: 0 0 6px; }
+.lam-exhibit .voice-presence > .voice-exhibit-eyebrow { font-size: 6px; }
+.lam-exhibit::before { display: none; }
+@media (max-width: 900px) {
+  .avatar-mode-picker { gap: 8px; }
+  .avatar-mode-picker button { font-size: 9px; }
+  .avatar-mode-picker small { display: none; }
+  .lam-unavailable { padding: 14px; gap: 16px; flex-direction: column; }
+  .lam-unavailable > img { width: 100%; height: 170px; max-width: none; object-fit: cover; object-position: 50% 24%; flex-shrink: 0; }
+  .lam-unavailable > div { align-self: stretch; }
+  .lam-unavailable h2 { font-size: 29px; margin: 8px 0; }
+  .lam-unavailable p { font-size: 11px; }
+  .lam-readiness { margin: 12px 0; }
+  .lam-exhibit .voice-presence h2 { font-size: 22px; }
+  .lam-exhibit { display: flex; }
+  .lam-exhibit .voice-exhibit-body { display: flex; }
+  .lam-exhibit .voice-presence { border: 0; padding-bottom: 6px; }
+  .lam-exhibit .lam-stage { bottom: 70px; }
+  .lam-exhibit .voice-exhibit-controls { padding: 7px 10px; }
+  .lam-exhibit .voice-turn-indicator { display: none; }
+  .lam-exhibit .voice-exhibit-eyebrow { display: none; }
+  .lam-exhibit .voice-session-status { font-size: 9px; }
+  .lam-exhibit .voice-utility-controls { gap: 12px; }
+}

@@ -105,3 +105,24 @@ Checked on 27 September 2026 against the local Vite app.
 - Final visual proof is `verification/siddharth-avatar-preview.png`. Temporary viewport overrides were reset; the preview was left paused and muted. Reduced-motion settings disable autoplay; native microphone/camera access and paid avatar sessions are never requested by this preview.
 
 This is a kiosk prototype with live web research, connected cloud speech and a small curated exhibit. Tavus, public hosting, institutional semantic indexing and hardware integration remain unverified or unconnected. Provider-filtered references still need scholarly review; a citation is not automatic proof of a claim.
+
+## LAM + Audio2Expression local integration — 28 September 2026
+
+- Added the official LAM browser renderer and an optional CPU ONNX expression worker behind `/api/avatar`. Speech and research still use the existing server adapters. The UI distinguishes the experimental avatar from Siddharth's recorded introduction.
+- The community ONNX conversion is pinned and checksum-verified; approximately 404 MB including external weights. Model files and provider credentials are ignored by Git. A browser-build scan found no provider credential names, worker token or provider API URLs.
+- All **61 JavaScript tests** and **4 Python tests** passed; production build passed. Coverage includes malformed/oversized audio and motion, proxy credential isolation, expression interpolation, cancelled preparation, PCM resampling, bounded inference windows and sample playback that never starts follow-up recording.
+- The renderer is a lazy-loaded chunk, approximately 321 KB gzip / 1.20 MB minified, and triggers Vite's large-chunk advisory. It is not downloaded on ordinary pages.
+- Live Marathi speech check: 6.5707-second generated WAV → 198 expression frames in 593 ms through the local proxy. Jaw coefficients changed during speech. A Sarvam transcription round trip recovered the Marathi test sentence. These are one-machine observations, not visitor microphone tests, mouth-shape accuracy scores or end-to-end response-time guarantees.
+- Reference-avatar Marathi sample completed in the browser and left the microphone off. Captions displayed Marathi text. Switching to the recorded introduction and back restored the renderer. No new console errors appeared after the clean reload and mode-switch check.
+- Reference face rendered in the 1280×720 desktop layout. At an emulated 390×844 phone viewport, document dimensions matched the viewport, controls stayed visible, and captions scrolled within the panel. Fixed the phone name/status overlay so it sits below the face. Physical mobile frame rate remains untested.
+- Saved visual proof: `verification/lam-avatar-reference.png`. The pictured face is labelled **LAM reference avatar**, not Siddharth.
+- Siddharth's portrait successfully generated a Chatting Avatar ZIP in the official ModelScope exporter. The external OSS download host timed out in browser and command-line attempts, so the ZIP has not been imported and his face has not been render-tested. The generated URL is preserved in ignored `tmp/lam/siddharth-export.json`; `scripts/import-avatar.py` validates and installs the ZIP once available.
+- No public worker was deployed and no changes were pushed. Netlify needs a separately reachable worker for live avatar inference; the existing voice and recorded-preview paths remain available without it.
+
+## Siddharth custom avatar import — 28 September 2026
+
+- Imported the user-supplied `chatting_avatar_20260928033216.zip` as `public/avatars/siddharth.zip` after ZIP size/path/required-file validation. The original download remains unchanged. The production-build ZIP matches the supplied 4,102,340-byte file exactly.
+- Local `/api/avatar` reports the running worker, `/avatars/siddharth.zip` and the name Siddharth. Restarted the local development server to remove its previous process-level reference-face override.
+- Visually checked Siddharth's face and glasses. A Marathi sample completed through the existing speech/animation pipeline and returned to the paused state without follow-up microphone recording. This is a playback smoke test, not a phoneme-accuracy or acoustic microphone assessment.
+- Updated the setup guide, asset provenance, README, welcome text and recorded-introduction context to reflect the imported custom model. The recorded introduction remains separately labelled.
+- Saved proof: `verification/siddharth-live-avatar.png`. Public deployment still needs a separately reachable CPU worker. No changes have been pushed.

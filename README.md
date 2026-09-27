@@ -11,7 +11,7 @@
 **Digital Heritage Archive for Memorials, Manuscripts & Ambedkar: AI-Powered Institutional Archive and Audio-Visual Knowledge Platform**  
 **Organisation:** Ministry of Social Justice and Empowerment · **Category:** Hardware · **Theme:** Smart Education
 
-> **Early prototype.** Timeline, cited research and voice conversation work. Siddharth is a recorded preview; institutional tools and device integration are planned.
+> **Early prototype.** Timeline, cited research, voice conversation and Siddharth's experimental 3D avatar work locally. The avatar requires the CPU animation worker. Institutional tools and device integration are planned.
 
 ## The idea
 
@@ -27,7 +27,7 @@
 | **3D timeline** | 14 milestones, images, sources and event-to-research navigation | Working |
 | **Research Room** | Cited answers, follow-ups, source panel and note export | Working; published web sources |
 | **Multilingual voice** | Dictation, read-aloud and spoken conversation | Connected; internet and microphone required |
-| **Siddharth AI avatar** | Visual guide using the same answer pipeline | Recorded preview; live animation planned |
+| **Siddharth AI avatar** | Custom 3D guide using the same answer and speech pipeline | Connected locally with LAM + Audio2Expression; recorded introduction also available |
 | **Research dashboard & login** | Persistent collections, annotations, source comparison and research visualisations | Workflow previews |
 | **OCR scanning** | Scan → text extraction → human correction → approved archive record | Workflow preview |
 | **Institutional login & curator tools** | Staff roles, metadata review, publication approvals and version history | Workflow previews |
@@ -44,7 +44,7 @@
 - **Voice:** Sarvam Saaras v3 → research → Bulbul v3; turn-based speech with pause/end/interrupt.
 - **Planned retrieval:** FastAPI, PostgreSQL + pgvector, multilingual E5 and keyword/vector rank fusion (RRF).
 - **Planned digitisation:** OpenCV + Tesseract; FFmpeg + speech recognition; human review before indexing.
-- **Planned avatar:** Evaluate LAM + Audio2Expression; no live renderer is connected yet.
+- **Experimental avatar:** Sarvam WAV → CPU Audio2Expression → 52 facial coefficients → LAM WebGL renderer, synchronised to audio playback.
 
 ## Architecture
 
@@ -59,6 +59,10 @@ flowchart LR
     Research --> API
     Speech --> API
     API --> UI
+    API --> A2E[Optional local CPU avatar worker]
+    A2E --> Motion[30 FPS facial coefficients]
+    Motion --> Avatar[LAM browser renderer]
+    Avatar --> UI
     Local[Curated timeline + original-page preview] --> UI
   end
   subgraph Planned[Planned institutional integration]
@@ -78,7 +82,7 @@ flowchart LR
 ## Try the prototype
 
 1. **Life & timeline** → event → **Know more** → cited research → save/export notes.
-2. **AI guide** → **Voice conversation** → **AI Avatar** preview.
+2. **AI guide** → **Voice conversation** or **AI Avatar** → interactive lab / recorded introduction.
 3. **Landing page / Workspaces** → planned modules → Research, Institution or Kiosk workflows.
 
 ## Run locally
@@ -102,9 +106,11 @@ npm start
 
 Deploy the **backend and frontend** together. Netlify: repository root, `npm run build`, publish `dist`; functions are configured in `netlify.toml`. Set `PERPLEXITY_API_KEY` and `SARVAM_API_KEY` as server environment variables. Deployment notes: [Netlify setup](docs/NETLIFY.md).
 
+**Optional live avatar:** [LAM setup and asset import](docs/LAM_AVATAR.md). This adds a Python/ONNX worker (about 404 MB of model files, CPU inference) and a reusable avatar ZIP. A Netlify deployment needs a separately reachable worker; its functions cannot reach your laptop's localhost. Ordinary voice and the recorded introduction work without this worker.
+
 ## Evidence & documentation
 
-- **Checks:** 53 automated tests, build and responsive UI checks: [Verification](VERIFICATION.md). Kiosk acoustics and archival accuracy require separate evaluation.
+- **Checks:** 61 JavaScript tests, 4 Python tests, production build and responsive UI checks: [Verification](VERIFICATION.md). Kiosk acoustics, facial-animation quality and archival accuracy require separate evaluation.
 - **Historical sources:** [Dr. Ambedkar Foundation](https://ambedkarfoundation.nic.in/know-ambedkar.html), [Parliament Digital Library](https://eparlib.sansad.in/bitstream/123456789/782459/1/Golden_Jubilee_Republic_of_India.pdf), universities and institutional collections; see [source records](src/archive.js).
 - **Further detail:** [Development & deployment](docs/DEVELOPMENT.md) · [Voice setup](VOICE_SETUP.md) · [Source and image credits](SOURCE_NOTES.md).
 - **Content:** Historical records and illustrations are labelled separately; source/asset licences apply. No institutional affiliation is implied.

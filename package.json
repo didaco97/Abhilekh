@@ -8,11 +8,14 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
     "start": "node server/index.js",
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js",
+    "avatar:setup": "python scripts/setup-avatar.py",
+    "avatar:worker": "node scripts/start-avatar.mjs"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "latest",
     "@fontsource/dm-sans": "latest",
+    "gaussian-splat-renderer-for-lam": "0.0.9-alpha.2",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",

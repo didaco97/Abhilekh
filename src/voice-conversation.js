@@ -6,6 +6,7 @@ export function createVoiceConversation({ language, onChange, speechOptions,
   createSpeech = createCloudSpeechSession, fetchImpl = fetch, nextTurnDelay = 650 }) {
   let state = { ...initialConversation }, history = [], version = 0, request, nextTimer, deadline;
   let disposed = false;
+  let listenAfterReply = true;
   const update = patch => { state = { ...state, ...patch }; if (!disposed) onChange(state); };
   function cancelWork() {
     version++;
@@ -36,6 +37,10 @@ export function createVoiceConversation({ language, onChange, speechOptions,
     onPlaybackStart: () => { if (state.active && !disposed) update({ phase: "speaking", notice: "The guide is speaking. Microphone off." }); },
     onPlaybackEnd: () => {
       if (!state.active || disposed) return;
+      if (!listenAfterReply) {
+        update({ active: false, phase: 'paused', notice: 'Sample finished. Start a conversation when you’re ready.' });
+        return;
+      }
       update({ phase: "ready", notice: "Your turn. Preparing to listen…" });
       const current = version;
       nextTimer = setTimeout(() => { if (!disposed && state.active && current === version) listen(); }, nextTurnDelay);
@@ -44,6 +49,7 @@ export function createVoiceConversation({ language, onChange, speechOptions,
   });
   function listen() {
     if (disposed) return;
+    listenAfterReply = true;
     cancelWork();
     update({ active: true, phase: "starting", notice: "Opening the microphone…", error: "" });
     void speech.startListening({ language: language.code, autoStop: true });
@@ -51,7 +57,7 @@ export function createVoiceConversation({ language, onChange, speechOptions,
   async function answerQuestion(question) {
     if (!question?.trim()) { fail("I didn’t catch that. Please try again."); return; }
     const current = version;
-    update({ phase: "thinking", question: question.trim(), answer: null, notice: "Preparing a reply…", error: "" });
+    update({ phase: "thinking", question: listenAfterReply ? question.trim() : '', answer: null, notice: "Preparing a reply…", error: "" });
     const controller = new AbortController();
     request = controller;
     deadline = setTimeout(() => controller.abort(), 50000);
@@ -75,6 +81,13 @@ export function createVoiceConversation({ language, onChange, speechOptions,
   }
   return {
     start: listen,
+    preview() {
+      if (disposed) return;
+      cancelWork();
+      listenAfterReply = false;
+      update({ active: true, phase: 'thinking', question: '', notice: 'Preparing an introduction…', error: '' });
+      void answerQuestion('Hello');
+    },
     finish: () => { if (state.phase === "listening") speech.finishListening(); },
     interrupt: listen,
     pause() {

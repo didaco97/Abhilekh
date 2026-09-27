@@ -155,3 +155,19 @@ test("long multilingual narration plays bounded segments in order and completes 
   assert.equal(finished, 1);
   f.session.dispose();
 });
+
+test('cancelling avatar preparation aborts it and never starts stale audio playback', async () => {
+  let release, signal;
+  const f = setup({ callbacks: { preparePlayback: options => {
+    signal = options.signal;
+    return new Promise(resolve => { release = resolve; });
+  } } });
+  const pending = f.session.speak({ id: 'avatar', text: 'Hello', code: 'en', name: 'English' });
+  await flush();
+  f.session.stopAll();
+  assert.equal(signal.aborted, true);
+  release({ frames: [] });
+  await pending;
+  assert.equal(f.sounds.length, 0);
+  f.session.dispose();
+});

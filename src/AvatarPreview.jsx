@@ -56,7 +56,7 @@ export default function AvatarPreview({ onVoice, reducedMotion = false, blocked 
         <div className="avatar-film-header"><span><i />RECORDED PREVIEW</span></div>
         <div className="avatar-video-frame">
           <video ref={player} src="/media/siddharth-introduction.mp4" poster="/media/siddharth-poster.jpg"
-            aria-label="Siddharth introduces the upcoming AI avatar" aria-describedby="avatar-development-note"
+            aria-label="Siddharth's recorded introduction" aria-describedby="avatar-development-note"
             playsInline muted autoPlay={!reducedMotion && !systemReducedMotion && !blocked} preload="metadata"
             onPlay={() => { if (blocked || document.hidden || !player.current.getClientRects().length) player.current?.pause(); else { setPlaying(true); setEnded(false); } }}
             onPause={() => setPlaying(false)} onEnded={() => { setPlaying(false); setEnded(true); }}
@@ -82,10 +82,10 @@ export default function AvatarPreview({ onVoice, reducedMotion = false, blocked 
         <div className="avatar-info" id="siddharth-information" tabIndex={0} aria-label="About Siddharth">
           <span className="eyebrow">A FACE FOR THE ARCHIVE</span>
           <h2>Meet <em>Siddharth.</em></h2>
-          <p className="avatar-role">Your future conversational archive guide.</p>
+          <p className="avatar-role">Your conversational archive guide.</p>
           <div className="avatar-development" id="avatar-development-note">
             <span>IN DEVELOPMENT</span>
-            <p>This is a recorded concept demonstration. Live avatar conversations are planned for development during Smart India Hackathon.</p>
+            <p>This is a recorded concept demonstration. Open the Interactive avatar tab to explore the experimental 3D guide when its service is connected.</p>
           </div>
           <div className="avatar-plans" aria-label="Planned avatar experience">
             <span className="eyebrow">THE EXPERIENCE WE’RE BUILDING</span>
@@ -95,7 +95,7 @@ export default function AvatarPreview({ onVoice, reducedMotion = false, blocked 
           </div>
         </div>
         <div className="avatar-actions">
-          <p className="avatar-mobile-note"><strong>Siddharth · In development</strong>Recorded demo. Live avatar planned for the hackathon.</p>
+          <p className="avatar-mobile-note"><strong>Siddharth · Recorded introduction</strong>Explore the experimental guide in the Interactive avatar tab.</p>
           <button className="button primary wide" onClick={onVoice}><Mic size={16} />Try live voice conversation<ArrowRight size={16} /></button>
           <p className="avatar-identity">Siddharth represents Abhilekh, not Dr. Ambedkar.</p>
         </div>

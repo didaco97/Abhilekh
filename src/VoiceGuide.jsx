@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, AudioLines, Captions, FileText, Globe2, Mic, MicOff, Pause, RotateCcw, Square } from "lucide-react";
+import { ArrowUpRight, AudioLines, Captions, FileText, Globe2, Mic, MicOff, Pause, Play, RotateCcw, Square } from "lucide-react";
 import { RESEARCH_LANGUAGES, findResearchLanguage } from "./research-languages.js";
 import { createVoiceConversation, initialConversation } from "./voice-conversation.js";
 import { recordingMimeType } from "./cloud-speech.js";
@@ -12,7 +12,8 @@ const titles = {
   speaking: "Listen. Discover.", ready: "What else would you like to know?", paused: "Take your time.", error: "Let’s try that again.",
 };
 
-export default function VoiceGuide({ onSource, blocked = false, languageCode = "en", onLanguageChange }) {
+export default function VoiceGuide({ onSource, blocked = false, languageCode = "en", onLanguageChange,
+  avatarController = null, renderPresence = null, avatarReady = true, avatarName = 'Siddharth', avatarError = '' }) {
   const language = findResearchLanguage(languageCode);
   const [state, setState] = useState(initialConversation);
   const [connection, setConnection] = useState("checking");
@@ -33,6 +34,7 @@ export default function VoiceGuide({ onSource, blocked = false, languageCode = "
     setState({ ...initialConversation });
     const current = createVoiceConversation({ language, onChange: setState, speechOptions: {
       mediaDevices: navigator.mediaDevices, Recorder: window.MediaRecorder, AudioClass: window.Audio,
+      ...avatarController?.speechOptions,
     } });
     session.current = current;
     const hide = () => { if (document.hidden) current.pause(); };
@@ -40,16 +42,17 @@ export default function VoiceGuide({ onSource, blocked = false, languageCode = "
     document.addEventListener("visibilitychange", hide);
     window.addEventListener("offline", offline);
     return () => { current.dispose(); session.current = null; document.removeEventListener("visibilitychange", hide); window.removeEventListener("offline", offline); };
-  }, [language]);
+  }, [language, avatarController]);
   useEffect(() => { if (blocked) session.current?.pause(); }, [blocked]);
+  useEffect(() => { if (avatarError) session.current?.pause(); }, [avatarError]);
   const speaking = ["speaking", "preparing"].includes(state.phase);
   const busy = ["starting", "transcribing", "thinking", "ready"].includes(state.phase);
   const refs = state.answer?.citations || [];
-  const canStart = supported && connection === "connected" && !blocked;
+  const canStart = supported && connection === "connected" && !blocked && avatarReady && !avatarError;
   function end() { session.current?.end(); setSources(false); setCaptions(false); }
   function toggleSources() { if (!sources) session.current?.pause(); setSources(!sources); }
   return (
-    <section className={`voice-exhibit ${sources || captions ? "with-companion" : ""}`} data-phase={state.phase} aria-label="Voice conversation guide">
+    <section className={`voice-exhibit ${sources || captions ? "with-companion" : ""} ${renderPresence ? 'lam-exhibit' : ''}`} data-phase={state.phase} aria-label={renderPresence ? 'Interactive avatar guide' : 'Voice conversation guide'}>
       <div className="voice-exhibit-top">
         <span className="voice-connection"><i />{connection === "checking" ? "CONNECTING" : connection === "connected" ? "VOICE CONNECTED" : "VOICE UNAVAILABLE"}</span>
         <label className="guide-language" htmlFor="guide-language"><Globe2 size={14} /><span className="sr-only">Conversation language</span>
@@ -60,14 +63,14 @@ export default function VoiceGuide({ onSource, blocked = false, languageCode = "
       </div>
       <div className="voice-exhibit-body">
         <div className="voice-presence">
-          <div className="voice-seal" aria-hidden="true">
+          {renderPresence ? renderPresence(state) : <div className="voice-seal" aria-hidden="true">
             <div className="voice-seal-ring ring-outer" /><div className="voice-seal-ring ring-inner" />
             <div className="voice-seal-core"><span lang="hi">अ</span></div>
             <div className="voice-bars">{Array.from({ length: 9 }, (_, index) => <i key={index} style={{ "--bar-index": index, "--bar-size": `${12 + Math.sin(index * 1.3) ** 2 * 24}px` }} />)}</div>
-          </div>
+          </div>}
           <span className="voice-exhibit-eyebrow">ABHILEKH / THE ARCHIVE, IN CONVERSATION</span>
-          <h2>{titles[state.phase]}</h2>
-          <p className="voice-session-status" role="status">{state.error || (!supported ? "Microphone recording is unavailable in this browser. Open the site in Chrome or Edge." : connection === "unavailable" ? "The voice service is unavailable. Please try again later." : state.notice || "Ask about a life, an idea, a moment that shaped India.")}</p>
+          <h2>{renderPresence && state.phase === 'idle' ? `Meet ${avatarName}.` : titles[state.phase]}</h2>
+          <p className="voice-session-status" role="status">{avatarError || state.error || (!avatarReady ? 'Preparing the 3D avatar…' : !supported ? "Microphone recording is unavailable in this browser. Open the site in Chrome or Edge." : connection === "unavailable" ? "The voice service is unavailable. Please try again later." : state.notice || "Ask about a life, an idea, a moment that shaped India.")}</p>
           <div className="voice-turn-indicator"><span>{state.phase === "listening" ? <Mic size={13} /> : <MicOff size={13} />}{state.phase === "listening" ? "MICROPHONE ON" : "MICROPHONE OFF"}</span><span>{state.turns ? `${String(state.turns).padStart(2, "0")} ${state.turns === 1 ? "ANSWER" : "ANSWERS"}` : "A CONVERSATION AT YOUR PACE"}</span></div>
         </div>
         {(captions || sources) && <aside className="voice-companion" aria-label="Conversation details" tabIndex={0}>
@@ -94,6 +97,7 @@ export default function VoiceGuide({ onSource, blocked = false, languageCode = "
         </div>
         <p className="voice-interaction-hint">{state.phase === "listening" ? "Pause after your question. The guide will answer automatically." : state.active ? "The microphone stays off while the guide answers." : "Speak naturally. Listen to the reply. Continue with a follow-up."}</p>
         <div className="voice-utility-controls">
+          {renderPresence && !state.active && <button disabled={!avatarReady || Boolean(avatarError) || connection !== 'connected' || blocked} onClick={() => session.current?.preview()}><Play size={14} />Hear a sample</button>}
           <button aria-pressed={captions} onClick={() => setCaptions(!captions)}><Captions size={16} />Captions</button>
           <button aria-pressed={sources} onClick={toggleSources}><FileText size={15} />Sources{refs.length > 0 && <span>{refs.length}</span>}</button>
           {state.answer && !state.active && <button onClick={() => { setSources(false); session.current?.replay(); }}><RotateCcw size={14} />Replay answer</button>}

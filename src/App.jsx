@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import TimelineExhibit from "./TimelineExhibit.jsx";
 import ResearchSources from "./ResearchSources.jsx";
 import VoiceGuide from "./VoiceGuide.jsx";
-import AvatarPreview from "./AvatarPreview.jsx";
+import AvatarGuide from "./AvatarGuide.jsx";
 import PrototypeWelcome from "./PrototypeWelcome.jsx";
 import Workspaces, { WorkspacesPreview } from "./Workspaces.jsx";
 import useResearchVoice from "./useResearchVoice.js";
@@ -838,9 +838,9 @@ export default function App() {
             </div>
             <div className="guide-mode-switch" aria-label="AI guide mode">
               <button aria-pressed={guideMode === "voice"} onClick={() => setGuideMode("voice")}><Mic size={17} /><span>Voice conversation</span><small>LIVE</small></button>
-              <button aria-pressed={guideMode === "avatar"} onClick={() => setGuideMode("avatar")}><Video size={17} /><span>AI Avatar</span><small>PREVIEW</small></button>
+              <button aria-pressed={guideMode === "avatar"} onClick={() => setGuideMode("avatar")}><Video size={17} /><span>AI Avatar</span><small>LAB</small></button>
             </div>
-            {guideMode === "voice" ? <VoiceGuide languageCode={answerLanguage} onLanguageChange={setAnswerLanguage} onSource={setSource} blocked={Boolean(welcomeOpen || source || notesOpen || notice || access || credits)} /> : <AvatarPreview onVoice={() => setGuideMode("voice")} reducedMotion={reduceMotion} blocked={Boolean(welcomeOpen || source || notesOpen || notice || access || credits)} />}
+            {guideMode === "voice" ? <VoiceGuide languageCode={answerLanguage} onLanguageChange={setAnswerLanguage} onSource={setSource} blocked={Boolean(welcomeOpen || source || notesOpen || notice || access || credits)} /> : <AvatarGuide onVoice={() => setGuideMode("voice")} languageCode={answerLanguage} onLanguageChange={setAnswerLanguage} onSource={setSource} reducedMotion={reduceMotion} blocked={Boolean(welcomeOpen || source || notesOpen || notice || access || credits)} />}
           </div>
         )}
         {view === "workspaces" && <Workspaces onPreview={setNotice} onResearch={() => navigate("research")} />}
