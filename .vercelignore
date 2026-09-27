@@ -1,0 +1,8 @@
+.env*
+research/
+tests/
+scripts/
+test-results/
+.venv-imagegen/
+tmp/
+output/

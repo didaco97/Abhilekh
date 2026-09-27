@@ -1,0 +1,151 @@
+.app-shell.guide-shell {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.guide-shell > .site-header { height: 78px; flex-shrink: 0; }
+.guide-shell > main { display: flex; flex: 1; min-height: 0; min-width: 0; }
+.guide-shell .guide-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  padding: 14px 4.65% 12px;
+  overflow: hidden;
+}
+.guide-shell .page-intro { flex-shrink: 0; margin-bottom: 14px; gap: 18px; }
+.guide-shell .page-intro .eyebrow { font-size: 8px; letter-spacing: 2px; }
+.guide-shell .page-intro h1 { font-size: clamp(29px, 3vw, 43px); margin-top: 5px; }
+.guide-shell .page-intro > p { font-size: 10px; }
+.guide-shell .guide-layout {
+  display: grid;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  margin: 0;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+.guide-shell .guide-stage { min-height: 0; min-width: 0; }
+.guide-shell .guide-stage-top { padding: 15px 20px; flex-shrink: 0; }
+.guide-shell .guide-art { flex: 1; height: auto; min-height: 0; margin: 0; }
+.guide-shell .orbit { width: clamp(100px, 25vh, 220px); height: clamp(100px, 25vh, 220px); }
+.guide-shell .orbit-three { width: clamp(80px, 18vh, 165px); height: clamp(80px, 18vh, 165px); }
+.guide-shell .guide-monogram { font-size: clamp(48px, 10vh, 86px); }
+.guide-shell .guide-wave { bottom: 0; }
+.guide-shell .guide-stage-copy { flex-shrink: 0; margin: 15px 12px 18px; }
+.guide-shell .guide-stage-copy h2 { font-size: clamp(29px, 5.8vh, 46px); margin: 9px 0; }
+.guide-shell .guide-stage-copy h2 > span { display: block; }
+.guide-shell .guide-device-bar { flex-shrink: 0; padding: 14px 10px; margin-top: 0; gap: 12px; }
+.guide-shell .guide-details {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.guide-info {
+  flex: 1;
+  min-height: 0;
+  padding: 18px 24px 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #bcc6af transparent;
+  scrollbar-gutter: stable;
+}
+.guide-info:focus-visible { outline: 2px solid #8a9a7b; outline-offset: -3px; }
+.guide-info > .eyebrow { font-size: 8px; }
+.guide-shell .guide-info h2 { font-size: 33px; margin: 8px 0; }
+.guide-info > p { font-size: 11px; line-height: 1.8; color: var(--muted); }
+.guide-shell .guide-steps { margin: 12px 0 0; }
+.guide-shell .guide-steps > div { padding: 8px 0; gap: 14px; }
+.guide-shell .guide-steps strong { font-size: 11px; }
+.guide-shell .guide-steps p { font-size: 10px; }
+.guide-actions { padding: 13px 28px 14px; border-top: 1px solid var(--line); flex-shrink: 0; }
+.guide-shell .guide-actions .button { min-height: 42px; padding: 10px 14px; font-size: 11px; }
+.guide-shell .guide-actions .guide-identity { font-size: 8px; line-height: 1.7; margin: 4px 0 0; }
+.guide-shell > .site-footer { min-height: 46px; flex-shrink: 0; padding: 0; }
+.guide-shell .footer-brand span { font-size: 17px; }
+.guide-shell .offline-note { flex-shrink: 0; }
+.guide-pane-switch { display: none; }
+.large-text .guide-info > p { font-size: 16px; }
+.large-text .guide-info .guide-steps p { font-size: 13px; }
+.large-text .guide-info .guide-steps strong { font-size: 14px; }
+
+@media (max-width: 900px) {
+  .guide-shell > .site-header { height: 72px; }
+  .guide-shell .guide-view { padding: 12px 4% 8px; }
+  .guide-shell .page-intro { margin-bottom: 8px; }
+  .guide-shell .page-intro > p { display: none; }
+  .guide-pane-switch {
+    display: flex;
+    flex-shrink: 0;
+    gap: 4px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 8px;
+  }
+  .guide-pane-switch button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 7px 14px;
+    font-size: 11px;
+    color: #717c6b;
+    border-bottom: 2px solid transparent;
+  }
+  .guide-pane-switch button[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--rust); background: #e9edde; }
+  .guide-shell .guide-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+  .guide-shell .guide-layout[data-pane="preview"] .guide-info { display: none; }
+  .guide-shell .guide-layout[data-pane="about"] .guide-stage { display: none; }
+  .guide-shell .guide-layout[data-pane="about"] .guide-details { grid-row: 1 / -1; }
+  .guide-shell .guide-stage-top { padding: 10px 14px; font-size: 6px; }
+  .guide-shell .guide-stage-top > span:last-child { display: none; }
+  .guide-shell .guide-stage-copy { margin: 8px 10px 12px; }
+  .guide-shell .guide-stage-copy h2 { font-size: 28px; margin: 6px 0; }
+  .guide-shell .guide-stage-copy h2 > span { display: inline; }
+  .guide-shell .guide-stage-copy > p { font-size: 9px; }
+  .guide-shell .guide-stage-copy > p br { display: none; }
+  .guide-shell .guide-stage-copy .eyebrow { display: none; }
+  .guide-shell .guide-art { overflow: hidden; }
+  .guide-shell .orbit { width: 120px; height: 120px; }
+  .guide-shell .orbit-three { width: 90px; height: 90px; }
+  .guide-shell .guide-monogram { font-size: 52px; }
+  .guide-shell .guide-wave { display: none; }
+  .guide-shell .guide-device-bar { padding: 9px; gap: 10px; }
+  .guide-shell .guide-device-bar > span { font-size: 7px; }
+  .guide-shell .guide-device-bar > span:last-child { display: none; }
+  .guide-shell .guide-actions { padding: 10px 16px; }
+  .guide-shell .guide-actions .button { font-size: 11px; gap: 10px; }
+  .guide-shell .guide-actions .guide-identity { font-size: 8px; }
+  .guide-info { padding: 20px; }
+  .guide-shell > .site-footer { margin: 0 4%; min-height: 44px; }
+  .guide-shell .footer-brand, .guide-shell .prototype-label { display: none; }
+  .guide-shell .footer-links { width: 100%; justify-content: space-between; gap: 6px; }
+  .guide-shell .footer-links button { min-height: 42px; }
+}
+@media (max-height: 650px) and (min-width: 901px) {
+  .guide-shell > .site-header { height: 64px; }
+  .guide-shell .guide-view { padding-top: 8px; }
+  .guide-shell .page-intro h1 { font-size: 32px; }
+  .guide-shell .page-intro { margin-bottom: 8px; }
+  .guide-shell .guide-stage-copy h2 { font-size: 32px; }
+  .guide-shell .guide-wave { display: none; }
+}
+@media (max-height: 500px) {
+  .guide-shell > .site-header { height: 58px; }
+  .guide-shell .page-intro, .guide-shell > .site-footer { display: none; }
+  .guide-shell .guide-view { padding-top: 6px; }
+  .guide-shell .guide-art { display: none; }
+  .guide-shell .guide-stage { justify-content: space-between; }
+  .guide-shell .guide-stage-copy { margin: 5px 10px; }
+  .guide-shell .guide-stage-copy h2 { font-size: 25px; }
+  .guide-shell .guide-stage-top { padding: 8px 12px; }
+  .guide-shell .guide-device-bar { padding: 7px; }
+}

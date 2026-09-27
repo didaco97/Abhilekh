@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 200" role="img" aria-labelledby="title desc">
+  <title id="title">Abhilekh — The Ambedkar Archive</title>
+  <desc id="desc">The letter अ in a dark teal archival arch beside the Abhilekh wordmark on warm paper.</desc>
+  <rect width="820" height="200" rx="6" fill="#f7f4ed"/>
+  <path d="M42 152V88a54 54 0 0 1 108 0v64Z" fill="#19373d"/>
+  <text x="96" y="130" font-family="Nirmala UI, Noto Sans Devanagari, Mangal, sans-serif" font-size="76" text-anchor="middle" fill="#f7f4ed">अ</text>
+  <text x="177" y="116" font-family="Georgia, serif" font-size="88" letter-spacing="-4" fill="#19373d">abhilekh<tspan fill="#a84930">.</tspan></text>
+  <text x="182" y="151" font-family="Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="4.3" fill="#19373d">THE AMBEDKAR ARCHIVE</text>
+</svg>
