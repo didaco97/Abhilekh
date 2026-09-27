@@ -83,7 +83,7 @@ flowchart LR
 
 ## Run locally
 
-Verified with Node **25.6.1**. Setup details: [Development guide](docs/DEVELOPMENT.md).
+Use Node **24 LTS** (`.nvmrc`). Also developed with Node 25.6.1. Setup: [Development guide](docs/DEVELOPMENT.md).
 
 ```sh
 npm ci
@@ -100,11 +100,11 @@ npm run build
 npm start
 ```
 
-Deploy the **backend and frontend** together. Vercel/Netlify adapters are included; configure server variables and `APP_ORIGIN`. Public deployment is not yet verified.
+Deploy the **backend and frontend** together. Netlify: repository root, `npm run build`, publish `dist`; functions are configured in `netlify.toml`. Set `PERPLEXITY_API_KEY` and `SARVAM_API_KEY` as server environment variables. Deployment notes: [Netlify setup](docs/NETLIFY.md).
 
 ## Evidence & documentation
 
-- **Checks:** 51 automated tests, build and responsive UI checks: [Verification](VERIFICATION.md). Kiosk acoustics and archival accuracy require separate evaluation.
+- **Checks:** 53 automated tests, build and responsive UI checks: [Verification](VERIFICATION.md). Kiosk acoustics and archival accuracy require separate evaluation.
 - **Historical sources:** [Dr. Ambedkar Foundation](https://ambedkarfoundation.nic.in/know-ambedkar.html), [Parliament Digital Library](https://eparlib.sansad.in/bitstream/123456789/782459/1/Golden_Jubilee_Republic_of_India.pdf), universities and institutional collections; see [source records](src/archive.js).
 - **Further detail:** [Development & deployment](docs/DEVELOPMENT.md) · [Voice setup](VOICE_SETUP.md) · [Source and image credits](SOURCE_NOTES.md).
 - **Content:** Historical records and illustrations are labelled separately; source/asset licences apply. No institutional affiliation is implied.

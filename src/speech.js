@@ -1,3 +1,6 @@
+// Keep cloud narration short enough for buffered serverless audio responses.
+export const CLOUD_SPEECH_CHUNK_LIMIT = 600;
+
 export function speechText(markdown) {
   return markdown
     .replace(/!\[[^\]]*\]\([^)]*\)/g, "")

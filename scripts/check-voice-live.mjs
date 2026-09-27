@@ -1,10 +1,10 @@
-// Opt-in live integration check. Makes paid speech and research requests via localhost.
+// Opt-in live integration check. Makes paid speech and research requests.
 // No credential or audio payload is printed or written to disk.
 import assert from "node:assert/strict";
-const base = "http://127.0.0.1:5173";
+const base = new URL(process.env.CHECK_BASE_URL || "http://127.0.0.1:5173").origin;
 async function post(path, body) {
   const response = await fetch(base + path, {
-    method: "POST", headers: { "Content-Type": "application/json" },
+    method: "POST", headers: { "Content-Type": "application/json", Origin: base },
     body: JSON.stringify(body), signal: AbortSignal.timeout(55000),
   });
   const data = await response.json();

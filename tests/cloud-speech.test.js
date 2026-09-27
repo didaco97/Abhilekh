@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createCloudSpeechSession } from "../src/cloud-speech.js";
+import { CLOUD_SPEECH_CHUNK_LIMIT } from "../src/speech.js";
 const flush = async () => { for (let i = 0; i < 6; i++) await new Promise(resolve => setImmediate(resolve)); };
 function setup({ getUserMedia, fetchImpl, callbacks = {} } = {}) {
   const states = [], notices = [], drafts = [], recorders = [], requests = [], sounds = [], revoked = [];
@@ -134,6 +135,23 @@ test("playback callbacks report actual start and completion for the guide loop",
   await f.session.speak({ id: "a", text: "नमस्ते", code: "hi", name: "Hindi" });
   assert.equal(started, 1); assert.equal(finished, 0);
   await f.sounds[0].onended();
+  assert.equal(finished, 1);
+  f.session.dispose();
+});
+
+test("long multilingual narration plays bounded segments in order and completes only after the last", async () => {
+  let finished = 0;
+  const f = setup({ callbacks: { onPlaybackEnd: () => finished++ } });
+  const text = Array.from({ length: 120 }, (_, index) => `समानता ${index}`).join(" ");
+  await f.session.speak({ id: "long", text, code: "hi", name: "Hindi" });
+  assert.equal(f.requests.length, 1);
+  for (let index = 0; index < f.sounds.length; index++) {
+    assert.equal(finished, 0);
+    await f.sounds[index].onended();
+  }
+  assert.ok(f.requests.length > 1);
+  assert.ok(f.requests.every(call => call.text.length <= CLOUD_SPEECH_CHUNK_LIMIT));
+  assert.equal(f.requests.map(call => call.text).join(" "), text);
   assert.equal(finished, 1);
   f.session.dispose();
 });

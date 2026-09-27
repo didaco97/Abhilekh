@@ -1,7 +1,9 @@
 import { findResearchLanguage, RESEARCH_LANGUAGES } from "../src/research-languages.js";
-import { speechText } from "../src/speech.js";
+import { CLOUD_SPEECH_CHUNK_LIMIT, speechText } from "../src/speech.js";
 
 export const VOICE_REQUEST_LIMIT = 1500000;
+// Leave headroom for JSON and the function envelope below Netlify's 6 MB limit.
+export const VOICE_RESPONSE_AUDIO_LIMIT = 5500000;
 const AUDIO_LIMIT = 1000000;
 const TYPES = new Map([["audio/webm", "webm"], ["audio/mp4", "m4a"], ["audio/ogg", "ogg"], ["audio/wav", "wav"]]);
 class VoiceError extends Error {
@@ -68,8 +70,8 @@ export function createVoiceService({ apiKey, fetchImpl = fetch, now = Date.now, 
           body.append("language_code", language.locale);
           path = "speech-to-text";
         } else {
-          if (typeof input.text !== "string" || !input.text.trim() || input.text.length > 2500)
-            throw new VoiceError(400, "Please read a shorter passage of up to 2,500 characters.");
+          if (typeof input.text !== "string" || !input.text.trim() || input.text.length > CLOUD_SPEECH_CHUNK_LIMIT)
+            throw new VoiceError(400, `Please read a shorter passage of up to ${CLOUD_SPEECH_CHUNK_LIMIT} characters.`);
           const text = speechText(input.text);
           if (!text) throw new VoiceError(400, "There is no readable text in this passage.");
           body = JSON.stringify({ text, language_code: language.locale, model: "bulbul:v3", speaker: "shubh", pace: 1, speech_sample_rate: 24000, output_audio_codec: "wav" });
@@ -90,7 +92,9 @@ export function createVoiceService({ apiKey, fetchImpl = fetch, now = Date.now, 
           return reply(200, { transcript: transcript.slice(0, 1200), truncated: transcript.length > 1200, language: language.code });
         }
         const audio = data.audios?.[0];
-        if (typeof audio !== "string" || !/^[A-Za-z0-9+/]+={0,2}$/.test(audio) || audio.length > 12000000)
+        if (typeof audio === "string" && audio.length > VOICE_RESPONSE_AUDIO_LIMIT)
+          throw new VoiceError(502, "This narration is too long to play. Please try a shorter passage.");
+        if (typeof audio !== "string" || !/^[A-Za-z0-9+/]+={0,2}$/.test(audio))
           throw new VoiceError(502, "The voice service returned no playable audio. Please try again.");
         return reply(200, { audio, mimeType: "audio/wav" });
       } catch (error) {

@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createVoiceService, VOICE_REQUEST_LIMIT } from "../server/voice.js";
+import { createVoiceService, VOICE_REQUEST_LIMIT, VOICE_RESPONSE_AUDIO_LIMIT } from "../server/voice.js";
+import { CLOUD_SPEECH_CHUNK_LIMIT } from "../src/speech.js";
 const audio = Buffer.alloc(1200, 1).toString("base64");
 const request = (data, origin) => new Request("http://localhost/api/voice", { method: "POST", headers: { "Content-Type": "application/json", ...(origin ? { origin } : {}) }, body: JSON.stringify(data) });
 const input = { action: "transcribe", audio, mimeType: "audio/webm;codecs=opus", language: "mr" };
@@ -52,7 +53,7 @@ test("voice rejects cross-origin, malformed, oversized and unsupported inputs be
   let calls = 0;
   const service = createVoiceService({ apiKey: "private", fetchImpl: async () => { calls++; return Response.json({}); } });
   assert.equal((await service.handle(request(input, "https://elsewhere.test"))).status, 403);
-  for (const data of [null, { ...input, language: "xx" }, { ...input, mimeType: "text/html" }, { ...input, audio: "%%%" }, { action: "speak", language: "hi", text: "x".repeat(2501) }])
+  for (const data of [null, { ...input, language: "xx" }, { ...input, mimeType: "text/html" }, { ...input, audio: "%%%" }, { action: "speak", language: "hi", text: "x".repeat(CLOUD_SPEECH_CHUNK_LIMIT + 1) }])
     assert.equal((await service.handle(request(data))).status, 400);
   assert.equal((await service.handle(request({ ...input, audio: "x".repeat(VOICE_REQUEST_LIMIT) }))).status, 413);
   assert.equal(calls, 0);
@@ -72,4 +73,14 @@ test("silence and missing narration audio produce actionable failures", async ()
   const service = createVoiceService({ apiKey: "private", fetchImpl: async () => Response.json({ transcript: " " }) });
   assert.equal((await service.handle(request(input))).status, 422);
   assert.equal((await service.handle(request({ action: "speak", text: "Hello", language: "en" }))).status, 502);
+});
+
+test("oversized narration returns a small error instead of exceeding the hosting payload limit", async () => {
+  const service = createVoiceService({ apiKey: "private", fetchImpl: async () =>
+    Response.json({ audios: ["A".repeat(VOICE_RESPONSE_AUDIO_LIMIT + 4)] }) });
+  const response = await service.handle(request({ action: "speak", language: "en", text: "Hello" }));
+  assert.equal(response.status, 502);
+  const body = await response.text();
+  assert.match(body, /shorter passage/);
+  assert.ok(Buffer.byteLength(body) < 1000);
 });

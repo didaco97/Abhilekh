@@ -17,6 +17,14 @@ Checked on 27 September 2026 against the local Vite app.
 - Checked desktop layout at 985×615 CSS pixels and mobile at 300×649. The dialog had no horizontal overflow, the entry button remained visible and keyboard focus stayed inside the native dialog. Research Room still matched the 300×649 viewport after the additional footer link. Temporary viewport overrides were reset.
 - Production build and all 51 existing tests passed. Screenshot: `verification/welcome-popup.png`.
 
+## Netlify deployment preparation
+
+- All 53 tests and the production build passed after limiting cloud narration to 600-character segments and capping buffered audio responses below 6 MB.
+- Added coverage for complete, ordered multilingual narration across segments and for oversized upstream audio responses.
+- Pinned Node 24 for hosting; the local test/build run used Node 25.6.1.
+- Added Netlify per-IP/domain rate limits; deployment and platform enforcement still require live verification.
+- The opt-in speech/research smoke script accepts `CHECK_BASE_URL` and sends the deployed site origin.
+
 ## Earlier interface checks
 
 - Production build: passes.

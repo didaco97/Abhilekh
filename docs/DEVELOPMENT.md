@@ -4,7 +4,7 @@ A React/Vite kiosk and Node research backend for SIH26096. The visual direction 
 
 ## Run locally
 
-Requires a current Node.js version compatible with the locked Vite release. Developed with Node 25.6.1.
+Use Node 24 LTS, pinned in `.nvmrc`. Also developed with Node 25.6.1.
 
 The local server reads `PERPLEXITY_API_KEY` from the ignored `.env.local` file or server environment. `.env.example` contains the configuration names without a key. Never use a `VITE_` prefix for credentials.
 
@@ -54,7 +54,7 @@ npm run preview
 
 The frontend builds to `dist`, but live research also requires a server endpoint. For a Node host, run `npm run build` then `npm start`; set `PORT`, `HOST` and `APP_ORIGIN` as required by the host. The default binds to localhost. Hash routes need no history rewrites.
 
-Vercel and Netlify adapters are included at `api/chat.js` and `netlify/functions/chat.mjs`. Set the project root to `abhilekh-prototype`, configure the credential in server environment settings, and verify function execution after deployment. Uploading only `dist` to a static host does not enable live research. Cloud deployment has not yet been performed.
+Vercel and Netlify adapters include both chat and voice endpoints. In the `didaco97/Abhilekh` GitHub repository, the app is at the repository root: leave the base directory blank. Configure credentials in server environment settings and verify function execution after deployment. Uploading only `dist` to a static host does not enable live research. See [Netlify setup](NETLIFY.md). Cloud deployment has not yet been verified.
 
 ## Research service controls
 

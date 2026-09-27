@@ -1,4 +1,4 @@
-import { speechChunks, speechText } from "./speech.js";
+import { CLOUD_SPEECH_CHUNK_LIMIT, speechChunks, speechText } from "./speech.js";
 import { monitorSpeechBoundary } from "./speech-boundary.js";
 
 export function recordingMimeType(Recorder) {
@@ -142,7 +142,7 @@ export function createCloudSpeechSession({ mediaDevices, Recorder, AudioClass, f
   async function speak({ id, text, code, name }) {
     stopAll();
     const current = token;
-    const chunks = speechChunks(speechText(text), 2000);
+    const chunks = speechChunks(speechText(text), CLOUD_SPEECH_CHUNK_LIMIT);
     if (!chunks.length) { fail("There is no readable text in this answer. Please try another question."); return; }
     update({ speakingId: id });
     let index = 0;
